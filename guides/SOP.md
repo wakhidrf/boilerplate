@@ -28,6 +28,7 @@ Secara default, seluruh komponen harus berupa **Server Components**.
 ### 1.3 Aturan Penamaan & Struktur (Naming Convention)
 - **Files & Folders**: Wajib menggunakan `kebab-case` untuk seluruh nama file dan folder tanpa pengecualian (contoh: `hero-section.tsx`, `use-mortgage.ts`, `api-keys.ts`).
 - **Tujuan**: Menghindari masalah *case-sensitivity* antar sistem operasi dan mengikuti standar profesional Google.
+- **Larangan Index Files**: Dilarang keras menggunakan nama file `index.ts` atau `index.tsx`. Setiap file wajib memiliki nama yang deskriptif mencerminkan isinya (misal: `database.ts` bukan `index.ts`). Penggunaan *barrel files* juga dilarang untuk menghindari masalah performa dan kejelasan impor.
 - **Section-Based**: UI dipecah menjadi bagian mandiri di `src/views/sections` yang bersifat *data-driven* (menerima data via props).
 
 ### 1.4 Path Aliases & Imports
@@ -101,8 +102,8 @@ Untuk mencegah error *build* pada Client Components akibat dependensi modul Node
 ## 4. UI, UX, Asset & Aksesibilitas
 
 ### 4.1 Design & Asset Stack
-- **Styling**: Tailwind CSS & **shadcn/ui** untuk komponen dasar.
-- **Icons**: Wajib menggunakan **Remix Icons** (`react-icons/ri`) untuk konsistensi visual.
+- **Styling**: Tailwind CSS & **Fluent UI** untuk komponen dasar.
+- **Icons**: Wajib menggunakan **Fluent Icons** (`@fluentui/react-icons`) untuk konsistensi visual.
 - **Fonts**: Wajib menggunakan font dari [CDNFonts](https://www.cdnfonts.com/).
 - **Asset Standar**: Wajib format `.webp`, ukuran < 500KB (Hero) / < 100KB (Thumb), dan menggunakan `next/image`.
 - **Placeholder**: Gunakan gambar dari [Unsplash](https://unsplash.com/id) untuk preview/mockup.
@@ -143,6 +144,12 @@ Format pesan commit: `<type>(<scope>): <description>`
 - **Component Testing**: Simpan file spec di folder komponen terkait (`*.spec.tsx`).
 
 ---
+
+### 6.3 Dokumentasi Progres & Tracking (Memory Logs)
+- **Memory Logs**: Setiap langkah signifikan atau penyelesaian tahap refaktorisasi WAJIB dicatat dalam file baru di `guides/memory/<YYYY-MM-DD-HH-mm-ss>.md`.
+- **Isi Log**: Harus mencakup tanggal, daftar perubahan yang dilakukan, temuan teknis, dan catatan penting lainnya.
+- **Marking Plan**: Jika proyek memiliki `guides/Plan.md`, setiap langkah yang telah selesai harus ditandai dengan centang `[x]` pada judul atau butir rencana tersebut.
+- **Tujuan**: Memastikan transparansi progres bagi User dan memberikan riwayat teknis yang jelas untuk audit masa depan.
 
 ## 7. Pelaporan, Deployment & QA
 
