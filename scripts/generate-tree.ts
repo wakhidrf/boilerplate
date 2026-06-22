@@ -1,10 +1,15 @@
 import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 
-// Solusi ES Module: Menggunakan import.meta.dirname (Node.js 20.11.0+)
-const SRC_DIR = path.join(import.meta.dirname, "../src");
-const OUTPUT_DIR = path.join(import.meta.dirname, "../guides");
+// Replikasi manual __dirname agar kompatibel di scope ES Module (ESM)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Konfigurasi Jalur Folder
+const SRC_DIR = path.join(__dirname, "../src");
+const OUTPUT_DIR = path.join(__dirname, "../guides");
 const OUTPUT_FILE = path.join(OUTPUT_DIR, "ProjectTree.md");
 
 /**
@@ -73,7 +78,7 @@ function generateTreeAndCount(
       if (prefix !== "") {
         nextPrefix += isLast ? "    " : "│   ";
       } else {
-        // Jika ini adalah level pertama di bawah root folder
+        // Jika ini adalah level pertama di bawah root folder (src)
         nextPrefix = ""; 
       }
 
@@ -135,8 +140,7 @@ function main() {
   if (fs.existsSync(OUTPUT_FILE)) {
     const existingContent = fs.readFileSync(OUTPUT_FILE, "utf-8");
 
-    // Karena timestamp pasti berubah setiap kali dijalankan, kita bersihkan timestamp/meta
-    // dari perbandingan agar fokus hanya pada struktur konten Tree dan jumlah barisnya.
+    // Bersihkan timestamp dari perbandingan agar fokus hanya pada struktur konten Tree
     const extractCore = (text: string) => {
       const match = text.match(/```text([\s\S]*?)```/);
       return match ? match[1].trim() : text;
