@@ -2,9 +2,9 @@ import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-// Konfigurasi Jalur Folder
-const SRC_DIR = path.join(__dirname, "../src");
-const OUTPUT_DIR = path.join(__dirname, "../guides");
+// Solusi ES Module: Menggunakan import.meta.dirname (Node.js 20.11.0+)
+const SRC_DIR = path.join(import.meta.dirname, "../src");
+const OUTPUT_DIR = path.join(import.meta.dirname, "../guides");
 const OUTPUT_FILE = path.join(OUTPUT_DIR, "ProjectTree.md");
 
 /**
@@ -27,6 +27,7 @@ function countLines(filePath: string): number {
 function generateTreeAndCount(
   currentPath: string,
   prefix = "",
+  isLast = true
 ): { treeString: string; totalLines: number } {
   let treeString = "";
   let totalLines = 0;
@@ -36,19 +37,23 @@ function generateTreeAndCount(
   }
 
   const stats = fs.statSync(currentPath);
+  const baseName = path.basename(currentPath);
 
   if (stats.isFile()) {
     const lines = countLines(currentPath);
-    const fileName = path.basename(currentPath);
+    const marker = isLast ? "└── " : "├── ";
     return {
-      treeString: `${prefix}├── ${fileName} (${lines} lines)\n`,
+      treeString: `${prefix}${marker}${baseName} (${lines} lines)\n`,
       totalLines: lines,
     };
   }
 
   if (stats.isDirectory()) {
-    const dirName = path.basename(currentPath);
-    treeString += `${prefix}└── ${dirName}/\n`;
+    // Menampilkan nama folder saat ini jika bukan root folder
+    if (prefix !== "") {
+      const marker = isLast ? "└── " : "├── ";
+      treeString += `${prefix}${marker}${baseName}/\n`;
+    }
 
     const items = fs.readdirSync(currentPath).sort((a, b) => {
       // Memastikan folder berada di atas file secara visual
@@ -59,9 +64,20 @@ function generateTreeAndCount(
       return a.localeCompare(b);
     });
 
-    items.forEach((item) => {
+    items.forEach((item, index) => {
       const itemPath = path.join(currentPath, item);
-      const res = generateTreeAndCount(itemPath, `${prefix}    `);
+      const itemIsLast = index === items.length - 1;
+      
+      // Menentukan indentasi untuk level berikutnya
+      let nextPrefix = prefix;
+      if (prefix !== "") {
+        nextPrefix += isLast ? "    " : "│   ";
+      } else {
+        // Jika ini adalah level pertama di bawah root folder
+        nextPrefix = ""; 
+      }
+
+      const res = generateTreeAndCount(itemPath, nextPrefix, itemIsLast);
       treeString += res.treeString;
       totalLines += res.totalLines;
     });
@@ -90,7 +106,7 @@ function main() {
 
   // 1. Generate konten Tree baru
   const rootName = path.basename(SRC_DIR);
-  const { treeString, totalLines } = generateTreeAndCount(SRC_DIR);
+  const { treeString, totalLines } = generateTreeAndCount(SRC_DIR, "", true);
 
   const timestamp = new Date().toLocaleString("id-ID", {
     timeZone: "Asia/Jakarta",
