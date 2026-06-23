@@ -24,6 +24,9 @@ const IGNORE_LIST = new Set([
   "build",
   "package-lock.json",
   "next_dev.log",
+  "scripts",
+  ".vscode",
+  "guides",
 ]);
 
 // Pola ekstensi file yang diabaikan

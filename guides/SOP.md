@@ -235,15 +235,46 @@ Format pesan commit: `<type>(<scope>): <description>`
 ---
 
 ### 6.3 Dokumentasi Progres & Tracking (Memory Logs)
-- **Memory Logs**: Setiap langkah signifikan atau penyelesaian tahap refaktorisasi WAJIB dicatat dalam file baru di `guides/memory/<YYYY-MM-DD-HH-mm-ss>.md`.
+- **Memory Logs**: Setiap langkah signifikan atau penyelesaian tahap refaktorisasi WAJIB dicatat dalam file baru di `guides/memory/active/<YYYY-MM-DD-HH-mm-ss>.md`.
 - **Konteks Eksekutor**: Log ini dirancang sebagai **memori persisten untuk AI Coding Agents** (seperti Google Jules, OpenCode, Antigravity CLI, dan agen sejenis). Setiap agen yang mengerjakan task WAJIB membaca log terakhir sebelum memulai dan menulis log baru setelah selesai, untuk menjaga kontinuitas konteks antar sesi.
-- **Isi Log Wajib**:
-  - Tanggal & timestamp eksekusi
-  - Nama agen/eksekutor yang mengerjakan
-  - Daftar perubahan file yang dilakukan (path lengkap)
-  - Temuan teknis & keputusan arsitektur yang diambil
-  - Catatan blocker atau hal yang perlu ditindaklanjuti sesi berikutnya
+- **Struktur Folder Memory**:
+  ```
+  guides/
+  ├── Plan.md
+  ├── SOP.md
+  └── memory/
+      ├── active/       ← 10 log terbaru (konteks aktif agen)
+      ├── archive/      ← log lama (referensi saja)
+      └── summary/      ← ringkasan bulanan
+          └── YYYY-MM.md
+  ```
+- **Retensi Log**: Folder `active/` hanya boleh berisi **10 log terbaru**. Jika melebihi batas, log terlama dipindahkan ke `archive/` secara otomatis oleh agen yang menulis log baru.
+- **Prioritas Baca Agen**: Agen tidak perlu membaca semua log. Urutan prioritas:
+  1. Baca `summary/` terbaru terlebih dahulu
+  2. Baca 3-5 log terakhir di `active/`
+  3. Baca `archive/` hanya jika diperlukan referensi historis
+- **Summary Berkala**: Setiap 10 log di `active/`, agen wajib membuat file ringkasan baru di `summary/YYYY-MM.md` yang berisi:
+  - Keputusan arsitektur yang sudah final
+  - Perubahan besar yang sudah selesai
+  - Lessons learned — hal yang tidak boleh diulang
+- **Format Standar Isi Log**:
+  ```markdown
+  ## [YYYY-MM-DD HH:mm:ss] — Nama Agen
+
+  ### ✅ Selesai
+  - path/file yang diubah (path lengkap)
+
+  ### 🔍 Temuan Teknis
+  - Keputusan arsitektur yang diambil
+
+  ### ⚠️ Blocker / Catatan
+  - Hal yang perlu ditindaklanjuti sesi berikutnya
+
+  ### 📋 Plan.md Update
+  - Item plan yang sudah di-tick [x]
+  ```
 - **Marking Plan**: Jika proyek memiliki `guides/Plan.md`, setiap langkah yang telah selesai harus ditandai dengan centang `[x]` pada judul atau butir rencana tersebut.
+- **Sinkronisasi Plan dengan SOP**: Jika terdapat langkah atau rencana di `guides/Plan.md` yang tidak sesuai atau bertentangan dengan ketentuan di `SOP.md`, maka `Plan.md` wajib diperbarui agar selaras dengan SOP. SOP adalah **Single Source of Truth** — Plan tidak boleh mengarahkan implementasi yang melanggar SOP.
 - **Tujuan**: Mencegah pekerjaan tumpang tindih atau terulang antar sesi agen, memastikan transparansi progres bagi User, dan memberikan riwayat teknis yang jelas untuk audit masa depan.
 
 ## 7. Pelaporan, Deployment & QA
