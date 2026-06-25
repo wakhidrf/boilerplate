@@ -329,21 +329,39 @@ xl  → 1280px  (wide)
 ---
 
 ## 7. Sistem Animasi
-(v12 / React 19)
 
-### 7.1 Library & Versi
-- **Library**: `motion/react` (Motion v12).
-- **React 19 Integration**: Manfaatkan `useActionState` untuk sinkronisasi animasi dengan status form secara native.
-- **Target**: Smooth 60fps-120fps dengan menghormati preferensi sistem (`prefers-reduced-motion`).
+### 7.1 Prinsip Animasi
+- **Purposeful**: Setiap animasi harus memiliki tujuan fungsional (feedback, orientasi, transisi).
+- **Reduced Motion**: Wajib menghormati `prefers-reduced-motion` — semua animasi harus bisa dinonaktifkan.
+- **Performance**: Gunakan hanya properti `transform` dan `opacity` untuk animasi — hindari animasi `width`, `height`, `top`, `left`.
+- **Konsisten per Nuansa**: Karakter animasi mengikuti kepribadian nuansa aktif.
 
-### 7.2 Scroll-Driven & Layout Animation
-- Gunakan `useScroll` dan `whileInView`.
-- **New in v12**: Gunakan `layoutId` dengan `transition={{ layout: { duration: 0.3 } }}` untuk transisi elemen antar layout yang lebih smooth di React 19 Concurrent Mode.
+### 7.2 Kategori Animasi per Nuansa
 
-### 7.3 Micro-interactions & Performance
-- **AnimationFrame**: Gunakan `useAnimationFrame` untuk sinkronisasi manual jika diperlukan di luar render cycle.
-- **Event Listeners**: Gunakan `useMotionValueEvent` untuk performa tinggi (menghindari re-render).
-- Gunakan transisi `arc()` untuk path pergerakan yang melengkung pada elemen yang bergerak secara diagonal.
+| Nuansa | Karakter Animasi | Durasi Tipikal | Easing |
+|---|---|---|---|
+| Modern | Slide + fade, precise | 200ms | ease-out |
+| Cyberpunk | Glitch, flicker, scanline | 150ms | steps(4) |
+| Steampunk | Gear spin, slow reveal | 400ms | ease-in-out |
+| Nature | Float, breathe, grow | 300ms | ease-in-out |
+| Oldstyle | Page turn, ink fade | 500ms | linear |
+| Cowboy | Slide dari sisi, dust | 300ms | ease-out |
+| Japanese | Ink brush, slow wipe | 600ms | ease |
+| Retro | Bounce, overshoot | 400ms | spring |
+
+### 7.3 Animasi Standar (Tersedia di Semua Nuansa)
+```typescript
+// src/styles/animations/index.ts
+export const animations = {
+  fadeIn: "fadeIn 200ms ease-out",
+  slideUp: "slideUp 200ms ease-out",
+  slideDown: "slideDown 200ms ease-out",
+  scaleIn: "scaleIn 150ms ease-out",
+  // Override per nuansa untuk durasi & easing
+};
+```
+
+---
 
 ## 8. Responsivitas & Multiplatform
 
@@ -1404,7 +1422,7 @@ viewport enter → CTA final: particle burst + strong typography
 
 ```typescript
 // Wajib di semua komponen animasi
-import { useReducedMotion, useAnimationFrame, useMotionValueEvent } from "motion/react";
+import { useReducedMotion } from "motion/react";
 
 const prefersReducedMotion = useReducedMotion();
 
