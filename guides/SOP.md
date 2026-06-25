@@ -15,7 +15,7 @@
 ### 1.1 Standar Alur Kerja MVC (Model-View-Controller)
 Gunakan pola MVC yang ketat untuk menjaga keteraturan kode:
 - **Models** (`src/models`): Definisi skema data (Drizzle/ORM) dan validasi skema (**Valibot**). Satu file per entitas.
-- **Controllers** (`src/controllers`): Logika bisnis, Server Actions (`next-safe-action`), Hooks kustom, State Management (**nuqs** untuk URL state, **Zustand** untuk UI state lokal), dan Animation Logic (**motion** untuk scroll-driven & layout animation, **animejs** untuk timeline & SVG path animation).
+- **Controllers** (`src/controllers`): Logika bisnis, Server Actions (`next-safe-action` v7), Hooks kustom, State Management (**nuqs** untuk URL state, **Zustand** v5 untuk UI state lokal), dan Animation Logic (**motion/react** untuk scroll-driven & layout animation, **animejs** untuk timeline & SVG path animation).
 - **Views** (`src/views`): Komponen UI Reusable. Dilarang melakukan akses database langsung.
 - **Routing** (`src/app`): Folder routing yang merakit views dan memanggil controllers/data.
 
@@ -75,7 +75,7 @@ Secara default, seluruh komponen harus berupa **Server Components**.
 - **Optimasi Kueri**: Pilih kolom data secara eksplisit dan pastikan kolom pencarian terindeks dengan benar.
 - **Pemuatan Dinamis**: Gunakan teknik lazy loading untuk komponen berat yang tidak diperlukan segera.
 
-### 2.5 Animation & WebGL Performance Rules
+### 2.5 Animation & WebGL Performance Rules (v12/v19)
 - **Bundle Isolation**: Library animasi berat (`@react-three/fiber`, `@studio-freight/lenis`, `animejs`) wajib di-lazy load dan **tidak boleh masuk bundle halaman selain landing page**.
 - **GPU Detection**: Wajib mendeteksi kemampuan GPU via `detect-gpu` sebelum merender WebGL. Tier 0-1 → gunakan CSS fallback, Tier 2+ → render WebGL.
 - **Frame Management**: Semua Three.js canvas wajib menggunakan `frameloop="demand"` dan dihentikan saat tab tidak aktif via `visibilitychange` event.
@@ -84,7 +84,7 @@ Secara default, seluruh komponen harus berupa **Server Components**.
 - **Lenis Scroll**: Dinonaktifkan di semua halaman form dan transaksi (`/checkout`, `/payment`, `/form`) — gunakan native scroll untuk accessibility dan presisi.
 - **Reduced Motion**: Wajib menggunakan `useReducedMotion()` dari `motion/react` di semua komponen animasi — jika aktif, skip WebGL dan scroll-driven animation sepenuhnya.
 - **Stack Animasi yang Diizinkan**:
-  - `motion` (Framer Motion v11) → scroll-driven, layout animation, micro-interaction
+  - `motion/react` (Motion v12) → scroll-driven, layout animation, micro-interaction
   - `animejs` → timeline, SVG path animation, precise control
   - `@react-three/fiber` + `@react-three/drei` → WebGL scene
   - `@react-three/postprocessing` → post-processing effects
@@ -93,7 +93,7 @@ Secara default, seluruh komponen harus berupa **Server Components**.
   - `tsparticles` → particle 2D ringan (alternatif Three.js untuk mobile)
   - `cmdk` → command palette (Ctrl+K) untuk power user navigation & nuansa switcher
 
-### 2.5 Animation & WebGL Performance Rules
+### 2.5 Animation & WebGL Performance Rules (v12/v19)
 - **Bundle Isolation**: Three.js, animejs, dan @react-three/* wajib di-lazy import — tidak boleh masuk main bundle. Landing page memiliki chunk terpisah.
 - **GPU Detection**: Wajib menggunakan `detect-gpu` sebelum merender WebGL. Sediakan fallback CSS animation untuk GPU tier 0-1.
 - **Canvas Rules**: Semua `<Canvas>` Three.js wajib menggunakan `frameloop="demand"` dan `dpr={[1, 1.5]}`. Canvas background wajib `pointerEvents: "none"`.
