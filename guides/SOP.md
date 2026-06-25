@@ -76,7 +76,7 @@ Secara default, seluruh komponen harus berupa **Server Components**.
 - **Pemuatan Dinamis**: Gunakan teknik lazy loading untuk komponen berat yang tidak diperlukan segera.
 
 ### 2.5 Animation & WebGL Performance Rules
-- **Bundle Isolation**: Library animasi berat (`@react-three/fiber`, `@studio-freight/lenis`, `animejs`) wajib di-lazy load dan **tidak boleh masuk bundle halaman selain landing page**.
+- **Bundle Isolation**: Library animasi berat (`@react-three/fiber`, `lenis`, `animejs`) wajib di-lazy load dan **tidak boleh masuk bundle halaman selain landing page**.
 - **GPU Detection**: Wajib mendeteksi kemampuan GPU via `detect-gpu` sebelum merender WebGL. Tier 0-1 → gunakan CSS fallback, Tier 2+ → render WebGL.
 - **Frame Management**: Semua Three.js canvas wajib menggunakan `frameloop="demand"` dan dihentikan saat tab tidak aktif via `visibilitychange` event.
 - **Memory Cleanup**: Setiap komponen Three.js wajib melakukan `dispose()` pada geometry, material, dan texture di `useEffect` cleanup.
@@ -84,11 +84,11 @@ Secara default, seluruh komponen harus berupa **Server Components**.
 - **Lenis Scroll**: Dinonaktifkan di semua halaman form dan transaksi (`/checkout`, `/payment`, `/form`) — gunakan native scroll untuk accessibility dan presisi.
 - **Reduced Motion**: Wajib menggunakan `useReducedMotion()` dari `motion/react` di semua komponen animasi — jika aktif, skip WebGL dan scroll-driven animation sepenuhnya.
 - **Stack Animasi yang Diizinkan**:
-  - `motion` (Framer Motion v11) → scroll-driven, layout animation, micro-interaction
+  - `motion` (motion/react v12) → scroll-driven, layout animation, micro-interaction; wajib import dari `motion/react` bukan `framer-motion`
   - `animejs` → timeline, SVG path animation, precise control
   - `@react-three/fiber` + `@react-three/drei` → WebGL scene
   - `@react-three/postprocessing` → post-processing effects
-  - `@studio-freight/lenis` → smooth scroll (kecuali halaman form)
+  - `lenis` → smooth scroll (kecuali halaman form)
   - `detect-gpu` → GPU capability detection
   - `tsparticles` → particle 2D ringan (alternatif Three.js untuk mobile)
   - `cmdk` → command palette (Ctrl+K) untuk power user navigation & nuansa switcher

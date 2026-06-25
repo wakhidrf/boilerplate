@@ -883,9 +883,9 @@ Animasi dan WebGL bukan dekorasi — mereka adalah **kepribadian yang bergerak**
 ### 21.2 Animation Stack Lengkap
 ```
 Core Animation:
-├── motion (Framer Motion v11)      → scroll-driven, layout, page transition
+├── motion (motion/react v12)       → scroll-driven, layout, page transition; import dari `motion/react`
 ├── animejs                         → timeline kompleks, SVG path, presisi tinggi
-└── @studio-freight/lenis           → smooth scroll premium di semua halaman
+└── lenis                           → smooth scroll premium di semua halaman
 
 3D & WebGL:
 ├── @react-three/fiber              → React + Three.js
@@ -1196,7 +1196,7 @@ Prinsip utama: **"Wow di landing, purposeful di dalam app."**
 ```typescript
 // Lenis sebagai smooth scroll global di landing
 // src/app/(landing)/layout.tsx
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 import { useEffect } from "react";
 
 useEffect(() => {
