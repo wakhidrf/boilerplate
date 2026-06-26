@@ -1,0 +1,17 @@
+<<<<<<< SEARCH
+- **Views** (`src/views`): Komponen UI Reusable. Dilarang melakukan akses database langsung.
+=======
+- **Views** (`src/views`): Komponen UI Reusable. Secara default dilarang melakukan akses database langsung jika komponen bersifat *pure reusable UI*. Namun, **Feature Views** atau **Layout Containers** di dalam folder ini diperbolehkan berupa Async Server Components yang melakukan direct fetch atau database access via Drizzle untuk kemudahan komposisi (Next.js App Router pattern).
+>>>>>>> REPLACE
+<<<<<<< SEARCH
+### 5.6 CSRF Protection
+- Semua mutasi data via form wajib memverifikasi bahwa request berasal dari origin yang sah.
+- Gunakan origin check di Server Actions: cocokkan header `Origin` / `Referer` dengan `NEXT_PUBLIC_API_URL`. Jika tidak cocok → tolak dengan `403`.
+- `next-safe-action` wajib dikombinasikan dengan pengecekan origin ini untuk semua aksi yang bersifat mutasi.
+=======
+### 5.6 CSRF Protection
+- Semua mutasi data via form wajib memverifikasi bahwa request berasal dari origin yang sah.
+- Gunakan origin check di Server Actions: cocokkan header `Origin` / `Referer` dengan `NEXT_PUBLIC_API_URL`. Jika tidak cocok → tolak dengan `403`.
+- **Implementasi**: Wajib menggunakan middleware `next-safe-action` untuk melakukan pengecekan ini secara terpusat pada `actionClient`.
+- `next-safe-action` wajib dikombinasikan dengan pengecekan origin ini untuk semua aksi yang bersifat mutasi.
+>>>>>>> REPLACE

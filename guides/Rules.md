@@ -1,3 +1,11 @@
+# Sistem Skoring Kepatuhan AI (Compliance Scoring)
+
+Sistem ini digunakan untuk mengevaluasi apakah sebuah **Plan** (sebelum eksekusi) atau **Kode** (sesudah eksekusi) memenuhi standar SOP dan Design yang telah ditetapkan.
+
+### Mode Skoring:
+1.  **Pre-execution (Plan Evaluation)**: Mengevaluasi niat, pemilihan library, dan struktur yang direncanakan. Fokus pada arsitektur.
+2.  **Post-execution (Code Evaluation)**: Mengevaluasi implementasi nyata, kebersihan kode, dan detail fungsional.
+
 # Rules.md — AI Planning Compliance & Scoring System
 
 > **Tujuan Dokumen**: Mencegah AI menghasilkan plan atau output yang menyimpang dari `SOP.md` dan `Design.md`. Sebelum mengeksekusi atau menyetujui plan apapun, AI **wajib** menjalankan skoring ini dan melaporkan hasilnya kepada User.
@@ -25,24 +33,24 @@ AI **dilarang** melewati tahap ini dengan alasan apapun, termasuk "sudah jelas",
 
 | # | Kategori | Bobot Maksimal |
 |---|---|---|
-| A | Struktur MVC & Layer Separation | 30 poin |
-| B | Naming Convention & File Structure | 25 poin |
-| C | UI/UX Stack & Design System | 25 poin |
+| A | Struktur MVC & Layer Separation | 20 poin |
+| B | Naming Convention & File Structure | 15 poin |
+| C | UI/UX Stack & Design System | 30 poin |
 | D | State Management & Routing | 10 poin |
-| E | Security, Performance & Code Quality | 10 poin |
+| E | Security, Performance & Code Quality | 25 poin |
 | | **Total** | **100 poin** |
 
 ---
 
-## A — Struktur MVC & Layer Separation (30 poin)
+## A — Struktur MVC & Layer Separation (20 poin)
 
 Evaluasi apakah plan menempatkan logika di layer yang benar sesuai SOP 1.1 dan 1.6.
 
-### A1. Model Layer (10 poin)
+### A1. Model Layer (7 poin)
 
 | Skor | Kondisi |
 |---|---|
-| **10** | Skema data (`drizzle`) dan validasi (`valibot`) ada di `src/models/`. Satu file per entitas. Tidak ada logika bisnis di sini. |
+| **7** | Skema data (`drizzle`) dan validasi (`valibot`) ada di `src/models/`. Satu file per entitas. Tidak ada logika bisnis di sini. |
 | **7** | Model ada tapi satu file berisi lebih dari satu entitas, atau ada sedikit logika bisnis yang seharusnya di controller. |
 | **4** | Model dan controller tercampur, atau validasi dilakukan di luar `src/models/`. |
 | **0** | Tidak ada pemisahan model. Logika bisnis dan skema data ada di satu tempat (misalnya langsung di route handler). |
@@ -52,11 +60,11 @@ Evaluasi apakah plan menempatkan logika di layer yang benar sesuai SOP 1.1 dan 1
 - Koneksi DB (`db` instance) diimpor dari `@/models/db` di Client Components — wajib dari `@/models/client` di server
 - Validasi input tanpa `valibot` schema
 
-### A2. Controller Layer (10 poin)
+### A2. Controller Layer (7 poin)
 
 | Skor | Kondisi |
 |---|---|
-| **10** | Server Actions menggunakan `next-safe-action`. Hooks kustom ada di `src/controllers/`. State management (`nuqs`, `zustand`) dipanggil dari controller, bukan langsung di View. |
+| **7** | Server Actions menggunakan `next-safe-action`. Hooks kustom ada di `src/controllers/`. State management (`nuqs`, `zustand`) dipanggil dari controller, bukan langsung di View. |
 | **7** | Sebagian besar benar, tapi ada 1-2 kasus logika bisnis yang bocor ke View atau Route handler. |
 | **4** | Controller ada tapi tidak menggunakan `next-safe-action` untuk mutasi, atau animasi logic (`motion`, `animejs`) ada di View. |
 | **0** | Tidak ada controller layer. Semua logika ada di View atau Route handler. |
@@ -66,11 +74,11 @@ Evaluasi apakah plan menempatkan logika di layer yang benar sesuai SOP 1.1 dan 1
 - Hook kustom ditempatkan di `src/views/`
 - Animation logic (`motion`, `animejs`) ada di file yang sama dengan komponen presentational
 
-### A3. View Layer (10 poin)
+### A3. View Layer (6 poin)
 
 | Skor | Kondisi |
 |---|---|
-| **10** | `src/views/` hanya berisi komponen UI. Menerima data via props. Tidak ada `fetch()`, tidak ada akses DB, tidak ada logika bisnis. Section-based di `src/views/sections/`. |
+| **6** | `src/views/` hanya berisi komponen UI. Menerima data via props. Tidak ada `fetch()`, tidak ada akses DB, tidak ada logika bisnis. Section-based di `src/views/sections/`. |
 | **7** | View sebagian besar bersih, tapi ada 1-2 `fetch()` langsung atau sedikit logika kondisional bisnis. |
 | **4** | View melakukan pengambilan data langsung tapi tidak akses DB. Logika bisnis ringan ada di komponen. |
 | **0** | View mengakses database, atau terdapat logika bisnis kompleks di dalam komponen presentational. |
@@ -82,7 +90,7 @@ Evaluasi apakah plan menempatkan logika di layer yang benar sesuai SOP 1.1 dan 1
 
 ---
 
-## B — Naming Convention & File Structure (25 poin)
+## B — Naming Convention & File Structure (15 poin)
 
 Evaluasi apakah plan mengikuti standar penamaan SOP 1.3 dan 1.4.
 
@@ -109,19 +117,19 @@ Evaluasi apakah plan mengikuti standar penamaan SOP 1.3 dan 1.4.
 **Contoh benar**: `database.ts`, `auth-service.ts`, `format-currency.ts`  
 **Contoh salah**: `index.ts` (sebagai barrel), `index.tsx` (sebagai komponen entry)
 
-### B3. Path Aliases (7 poin)
+### B3. Path Aliases (5 poin)
 
 | Skor | Kondisi |
 |---|---|
-| **7** | Semua import menggunakan alias `@/` yang mengarah ke `src/`. Tidak ada relative path yang kompleks (lebih dari 1 level `../`). |
+| **5** | Semua import menggunakan alias `@/` yang mengarah ke `src/`. Tidak ada relative path yang kompleks (lebih dari 1 level `../`). |
 | **4** | Sebagian besar menggunakan `@/`, tapi ada beberapa `../` yang masih tersisa. |
 | **0** | Menggunakan relative path kompleks seperti `../../../../controllers/` atau tidak menggunakan alias sama sekali. |
 
 ---
 
-## C — UI/UX Stack & Design System (25 poin)
+## C — UI/UX Stack & Design System (30 poin)
 
-Evaluasi apakah plan menggunakan stack UI/UX yang benar sesuai SOP 4.1 dan seluruh `Design.md`.
+Evaluasi apakah plan menggunakan stack UI/UX yang benar sesuai SOP dan seluruh `Design.md`.
 
 ### C1. Fluent UI sebagai Satu-satunya Design System (10 poin)
 
@@ -138,11 +146,11 @@ Evaluasi apakah plan menggunakan stack UI/UX yang benar sesuai SOP 4.1 dan selur
 - `<GoogleLogin />` dari library Google — wajib Fluent UI Button + `useGoogleLogin()`
 - Komponen di `error.tsx` dan `not-found.tsx` yang tidak menggunakan Fluent UI
 
-### C2. Token System & Design Tokens (8 poin)
+### C2. Token System & Design Tokens (5 poin)
 
 | Skor | Kondisi |
 |---|---|
-| **8** | Semua nilai warna, font, spacing, radius, shadow menggunakan token dari `src/styles/tokens/`. Tidak ada hardcoded value di komponen. Styling menggunakan `makeStyles` dari Fluent UI. |
+| **5** | Semua nilai warna, font, spacing, radius, shadow menggunakan token dari `src/styles/tokens/`. Tidak ada hardcoded value di komponen. Styling menggunakan `makeStyles` dari Fluent UI. |
 | **5** | Sebagian besar dari token, tapi ada 1-3 hardcoded value (misalnya `color: "#3B82F6"` langsung di komponen). |
 | **2** | Banyak hardcoded value. Token system ada tapi tidak dipakai konsisten. |
 | **0** | Tidak ada token system. Semua value hardcoded langsung di komponen. |
@@ -152,11 +160,11 @@ Evaluasi apakah plan menggunakan stack UI/UX yang benar sesuai SOP 4.1 dan selur
 - Font hardcoded: `fontFamily: "Inter, sans-serif"` di luar token
 - Z-index diluar skala token (tidak boleh `zIndex: 9999`)
 
-### C3. Animation & WebGL Compliance (7 poin)
+### C3. Animation & WebGL Compliance (5 poin)
 
 | Skor | Kondisi |
 |---|---|
-| **7** | Library animasi sesuai stack yang diizinkan (`motion/react`, `animejs`, `lenis`). Import dari `motion/react` bukan `framer-motion`. Three.js di-lazy load. `prefers-reduced-motion` dihormati. GPU detection aktif sebelum WebGL. |
+| **5** | Library animasi sesuai stack yang diizinkan (`motion/react`, `animejs`, `lenis`). Import dari `motion/react` bukan `framer-motion`. Three.js di-lazy load. `prefers-reduced-motion` dihormati. GPU detection aktif sebelum WebGL. |
 | **5** | Stack animasi benar, tapi ada 1 pelanggaran minor (misal: lupa `frameloop="demand"` pada Canvas, atau lupa dispose geometry). |
 | **2** | Menggunakan library animasi yang tidak diizinkan, atau Three.js masuk main bundle tanpa lazy load. |
 | **0** | Menggunakan `framer-motion` (bukan `motion/react`), atau WebGL tanpa GPU detection, atau animasi `width`/`height`/`top`/`left` (bukan `transform`/`opacity`). |
@@ -168,6 +176,14 @@ Evaluasi apakah plan menggunakan stack UI/UX yang benar sesuai SOP 4.1 dan selur
 - Lenis aktif di halaman form/checkout/payment
 - Animasi properti selain `transform` dan `opacity`
 - Tidak ada `useReducedMotion()` di komponen animasi
+
+### C4. Design Quality & Accessibility (10 poin)
+
+| Skor | Kondisi |
+|---|---|
+| **10** | Memenuhi WCAG AA (kontras, focus indicator). Ada desain *empty state*. Voice & Tone sesuai nuansa. |
+| **5** | Visual bagus tapi aksesibilitas kurang (misal: kontras rendah atau tidak ada focus indicator). |
+| **0** | Tidak ada empty state, melanggar standar aksesibilitas dasar, atau tone bahasa asal-asalan. |
 
 ---
 
@@ -193,15 +209,17 @@ Evaluasi apakah plan menggunakan state management yang tepat sesuai SOP 1.2 dan 
 
 ---
 
-## E — Security, Performance & Code Quality (10 poin)
+## E — Security, Performance & Code Quality (25 poin)
 
-### E1. Security Essentials (5 poin)
+### E1. Security Essentials (20 poin) — [BLOCKING CATEGORY]
 
 | Skor | Kondisi |
 |---|---|
-| **5** | `next-safe-action` di semua mutasi. DOMPurify untuk konten dinamis di client. Rate limiting via `@upstash/ratelimit`. CSRF check di Server Actions. Xendit webhook dengan signature verification. |
-| **3** | Sebagian besar ada, tapi 1 aspek keamanan yang terlewat (misal: tidak ada rate limiting atau CSRF check). |
-| **0** | Tidak ada validasi server-side, atau mutasi tanpa `next-safe-action`, atau Xendit webhook tanpa verifikasi signature. |
+| **20** | `next-safe-action` di semua mutasi + CSRF middleware. DOMPurify di client. Rate limiting aktif. Xendit webhook signature verified. |
+| **10** | Keamanan dasar ada, tapi ada celah minor (misal: rate limiting kurang ketat). |
+| **0** | **CRITICAL FAILURE**: Tidak ada validasi server-side, mutasi tanpa `next-safe-action`, atau webhook tanpa verifikasi. |
+
+*Catatan: Skor 0 di E1 otomatis membuahkan verdict REJECT meskipun total skor tinggi.*
 
 ### E2. Performance & Code Quality (5 poin)
 
@@ -222,6 +240,8 @@ Evaluasi apakah plan menggunakan state management yang tepat sesuai SOP 1.2 dan 
 | **50–74** | 🔄 **REVISE** | Hentikan. Revisi plan dulu sebelum eksekusi. Buat draf revisi dan minta persetujuan User. |
 | **< 50** | 🚫 **REJECT** | Tolak plan. Jelaskan bagian yang melanggar SOP/Design dan susun ulang plan dari awal. |
 
+**Kondisi Khusus**: Jika Skor E1 (Security) adalah **0**, verdict otomatis menjadi **REJECT**.
+
 ---
 
 ## Format Laporan Skoring
@@ -233,18 +253,19 @@ Setiap kali AI menyusun plan, wajib menyertakan laporan ini **sebelum** menulis 
 
 | Kategori | Skor | Maks | Catatan |
 |---|---|---|---|
-| A1. Model Layer | X | 10 | ... |
-| A2. Controller Layer | X | 10 | ... |
-| A3. View Layer | X | 10 | ... |
-| B1. Kebab-case | X | 10 | ... |
-| B2. No Index Files | X | 8 | ... |
-| B3. Path Aliases | X | 7 | ... |
+| A1. Model Layer | X | 7 | ... |
+| A2. Controller Layer | X | 7 | ... |
+| A3. View Layer | X | 6 | ... |
+| B1. Kebab-case | X | 5 | ... |
+| B2. No Index Files | X | 5 | ... |
+| B3. Path Aliases | X | 5 | ... |
 | C1. Fluent UI Only | X | 10 | ... |
-| C2. Token System | X | 8 | ... |
-| C3. Animation Compliance | X | 7 | ... |
+| C2. Token System | X | 5 | ... |
+| C3. Animation Compliance | X | 5 | ... |
+| C4. Design Quality | X | 10 | ... |
 | D1. State Manager | X | 6 | ... |
 | D2. Routing vs Controller | X | 4 | ... |
-| E1. Security | X | 5 | ... |
+| E1. Security | X | 20 | ... |
 | E2. Performance & Quality | X | 5 | ... |
 | **TOTAL** | **XX** | **100** | |
 
@@ -327,6 +348,19 @@ Saat merefaktor proyek yang **sudah ada**, AI wajib:
 3. **Tidak Overwrite SOP**: Jika `Plan.md` lama bertentangan dengan SOP.md, `Plan.md` yang diperbarui (SOP adalah Single Source of Truth).
 4. **Memory Log Wajib**: Setiap sesi refaktor wajib menghasilkan log di `guides/memory/active/`.
 5. **Skor di Setiap PR**: Setiap batch perubahan yang signifikan wajib ada laporan skor sebelum dieksekusi.
+
+---
+
+## Mekanisme "Override dengan Alasan"
+
+Jika AI merasa perlu melanggar aturan (misal: file > 200 baris demi kohesi schema), AI wajib mencantumkan alasan di kolom "Catatan" pada Laporan Skoring. Jika User menyetujui, skor untuk poin tersebut dianggap penuh (Override Approved).
+
+---
+
+## Fast Path Reporting (Minor Changes)
+
+Untuk perubahan kecil (perbaikan typo, update teks, perubahan warna minor), AI tidak perlu tabel lengkap. Gunakan format singkat:
+`[FAST PATH] Compliance: PASSED (Security & SOP Checked)`
 
 ---
 

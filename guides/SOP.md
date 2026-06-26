@@ -16,7 +16,7 @@
 Gunakan pola MVC yang ketat untuk menjaga keteraturan kode:
 - **Models** (`src/models`): Definisi skema data (Drizzle/ORM) dan validasi skema (**Valibot**). Satu file per entitas.
 - **Controllers** (`src/controllers`): Logika bisnis, Server Actions (`next-safe-action`), Hooks kustom, State Management (**nuqs** untuk URL state, **Zustand** untuk UI state lokal), dan Animation Logic (**motion** untuk scroll-driven & layout animation, **animejs** untuk timeline & SVG path animation).
-- **Views** (`src/views`): Komponen UI Reusable. Dilarang melakukan akses database langsung.
+- **Views** (`src/views`): Komponen UI Reusable. Secara default dilarang melakukan akses database langsung jika komponen bersifat *pure reusable UI*. Namun, **Feature Views** atau **Layout Containers** di dalam folder ini diperbolehkan berupa Async Server Components yang melakukan direct fetch atau database access via Drizzle untuk kemudahan komposisi (Next.js App Router pattern).
 - **Routing** (`src/app`): Folder routing yang merakit views dan memanggil controllers/data.
 
 ### 1.2 Prinsip Client vs Server Components
@@ -229,6 +229,7 @@ Wajib mengkonfigurasi HTTP security headers di `next.config.js`:
 ### 5.6 CSRF Protection
 - Semua mutasi data via form wajib memverifikasi bahwa request berasal dari origin yang sah.
 - Gunakan origin check di Server Actions: cocokkan header `Origin` / `Referer` dengan `NEXT_PUBLIC_API_URL`. Jika tidak cocok → tolak dengan `403`.
+- **Implementasi**: Wajib menggunakan middleware `next-safe-action` untuk melakukan pengecekan ini secara terpusat pada `actionClient`.
 - `next-safe-action` wajib dikombinasikan dengan pengecekan origin ini untuk semua aksi yang bersifat mutasi.
 
 ### 5.7 Audit Log
